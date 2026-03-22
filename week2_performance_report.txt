@@ -1,0 +1,138 @@
+
+╔══════════════════════════════════════════════════════════════════════╗
+║         WEEK 2 PERFORMANCE ANALYSIS REPORT                         ║
+║         System Performance Intelligence Platform                    ║
+║         Generated: 2026-03-22 16:20:48                      ║
+╚══════════════════════════════════════════════════════════════════════╝
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. EXPERIMENT OVERVIEW
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  Platform      : Apple MacBook Air (Apple Silicon M-series)
+  Workload      : Simulated ML inference (matrix multiplication)
+  Dataset       : 104 experiments across 13 batch sizes
+  Batch range   : 8 → 512 (13 operating points)
+  Repeats       : 8 runs per batch size
+  SLA threshold : p95 latency < 20.0ms
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2. KEY FINDINGS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  FINDING 1 — Latency scales 2.9x across batch range
+  ─────────────────────────────────────────────────────
+  Minimum avg latency : 7.15ms at batch=8
+  Maximum avg latency : 20.85ms at batch=512
+  Growth factor       : 2.92x
+  Pattern             : Gradual growth, no single catastrophic cliff
+
+  FINDING 2 — Throughput peaks at small batch sizes
+  ─────────────────────────────────────────────────────
+  Peak throughput     : 140.5 req/s at batch=8
+  Throughput at 512   : 50.2 req/s
+  Collapse factor     : 2.80x drop from peak to batch=512
+  Implication         : Larger batches process more data but serve
+                        fewer requests per second
+
+  FINDING 3 — CPU is NOT the bottleneck
+  ─────────────────────────────────────────────────────
+  CPU vs latency correlation  : r=+0.368 (WEAK)
+  Batch vs latency correlation: r=+0.670 (MODERATE)
+  Throughput vs latency       : r=-0.888 (STRONG)
+  Conclusion: Computation scaling drives latency, not CPU saturation.
+              Apple Silicon handles CPU load efficiently across all
+              batch sizes (~55-65% CPU throughout).
+
+  FINDING 4 — SLA breach pattern
+  ─────────────────────────────────────────────────────
+  Safe batch sizes    : [8, 16, 32, 48, 64] → 0% breach rate
+  Critical batches    : [192, 512] → 50%+ breach rate
+  Overall breach rate : 24.0% (SLA allows 0.1%)
+  Error budget status : EXCEEDED by 240x
+
+  FINDING 5 — Two distinct degradation patterns
+  ─────────────────────────────────────────────────────
+  Pattern A (Sustained) : batch=512 — consistently high latency
+                          avg=20.9ms, p99=30.5ms, predictable
+  Pattern B (Spikes)    : batch=128, 320 — random latency spikes
+                          p99/p50 ratio 2.5x, 2.6x — unpredictable
+  Implication           : Spike pattern harder to detect and fix
+                          than sustained high latency
+
+  FINDING 6 — Tail latency inequality
+  ─────────────────────────────────────────────────────
+  Best consistency    : batch=448 (p50/p99 ratio = 0.64)
+  Worst consistency   : batch=320 (p50/p99 ratio = 0.39)
+  No batch size achieved Good consistency (>0.7)
+  Implication         : System never fully predictable —
+                        worst users always get 1.6x-2.6x
+                        worse experience than typical users
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+3. BOTTLENECK ANALYSIS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  Primary bottleneck  : Computation scaling with batch size
+  Secondary factor    : Non-deterministic OS scheduling causing
+                        latency spikes at moderate batch sizes
+  NOT a bottleneck    : CPU utilization (r=+0.37, weak)
+  NOT a bottleneck    : Memory usage (r=+0.39, spurious correlation)
+
+  Root cause          : Matrix multiplication complexity grows as
+                        O(n²) with batch size — each doubling of
+                        batch size more than doubles computation
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+4. CAPACITY PLANNING RECOMMENDATIONS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  RECOMMENDATION 1 — Safe production batch size
+  Maximum recommended batch size: 64
+  Rationale: Zero SLA breaches below batch=64. Beyond this point
+             the system enters Warning zone with increasing
+             breach probability.
+
+  RECOMMENDATION 2 — Avoid spike-prone batch sizes
+  Avoid batch=128 and batch=320 under sustained load.
+  Rationale: These show worst p99/p50 ratios (2.5x, 2.6x)
+             indicating high variance — unpredictable for users.
+
+  RECOMMENDATION 3 — Horizontal scaling trigger point
+  Scale horizontally when batch size demand exceeds 64.
+  Rationale: Beyond batch=64 it is more cost-effective to add
+             another inference instance than to absorb the
+             latency and SLA breach cost.
+
+  RECOMMENDATION 4 — Monitoring alert thresholds
+  Alert on p95 > 15ms  (early warning — 75% of SLA limit)
+  Alert on p95 > 20ms  (SLA breach — immediate action needed)
+  Alert on p99 > 25ms  (tail spike — investigate scheduling)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+5. WEEK 2 DELIVERABLES COMPLETED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  Day 8  ✅  Correlation matrix — bottleneck identification
+  Day 9  ✅  Latency vs CPU dual axis analysis
+  Day 10 ✅  Non-linear growth detection engine
+  Day 11 ✅  Performance Risk Index dashboard
+  Day 12 ✅  SLA breach frequency + error budget analysis
+  Day 13 ✅  Tail latency metrics — p50, p90, p95, p99
+  Day 14 ✅  Mini performance analysis report (this document)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+6. NEXT PHASE — WEEK 3 (BOTTLENECK INTELLIGENCE)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  Day 15-16  Multi-variable bottleneck analysis
+  Day 17     Artificial memory pressure simulation
+  Day 18     Light vs heavy load regime comparison
+  Day 19     Performance cliff precise identification
+  Day 20     Bottleneck detection logic engine
+  Day 21     Bottleneck classification system
+
+╔══════════════════════════════════════════════════════════════════════╗
+║  END OF REPORT                                                      ║
+║  System Performance Intelligence Platform — Week 2 Complete        ║
+╚══════════════════════════════════════════════════════════════════════╝
