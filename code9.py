@@ -170,3 +170,5 @@ if crossover_batch and not pd.isna(crossover_batch):
     print(f"\n⚡ CPU + Latency both growing simultaneously from batch={crossover_batch}")
 else:
     print("\n⚡ No clear simultaneous crossover detected — CPU and latency grow independently")
+
+
