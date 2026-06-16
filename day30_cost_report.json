@@ -1,0 +1,143 @@
+{
+  "generated_at": "2026-06-16T13:36:38.459325",
+  "cost_parameters": {
+    "cpu_cost_per_hour": 0.05,
+    "cpu_cost_per_second": 1.388888888888889e-05,
+    "sla_penalty_per_breach": 0.5,
+    "currency": "USD"
+  },
+  "optimal_batch_size": 8,
+  "cheapest_compute_batch": 448,
+  "per_batch_costs": [
+    {
+      "batch_size": 8,
+      "avg_latency_ms": 7.15,
+      "cost_per_call_usd": 1e-07,
+      "cost_per_request_usd": 1e-08,
+      "penalty_per_request": 0.0,
+      "total_cost_per_request": 1e-08,
+      "sla_breach_pct": 0.0,
+      "cost_efficiency_score": 99.8781
+    },
+    {
+      "batch_size": 16,
+      "avg_latency_ms": 7.2,
+      "cost_per_call_usd": 1e-07,
+      "cost_per_request_usd": 1e-08,
+      "penalty_per_request": 0.0,
+      "total_cost_per_request": 1e-08,
+      "sla_breach_pct": 0.0,
+      "cost_efficiency_score": 99.1218
+    },
+    {
+      "batch_size": 32,
+      "avg_latency_ms": 7.95,
+      "cost_per_call_usd": 1.1e-07,
+      "cost_per_request_usd": 0.0,
+      "penalty_per_request": 0.0,
+      "total_cost_per_request": 0.0,
+      "sla_breach_pct": 0.0,
+      "cost_efficiency_score": 90.5168
+    },
+    {
+      "batch_size": 48,
+      "avg_latency_ms": 9.15,
+      "cost_per_call_usd": 1.3e-07,
+      "cost_per_request_usd": 0.0,
+      "penalty_per_request": 0.0,
+      "total_cost_per_request": 0.0,
+      "sla_breach_pct": 0.0,
+      "cost_efficiency_score": 78.7962
+    },
+    {
+      "batch_size": 64,
+      "avg_latency_ms": 9.02,
+      "cost_per_call_usd": 1.3e-07,
+      "cost_per_request_usd": 0.0,
+      "penalty_per_request": 0.0,
+      "total_cost_per_request": 0.0,
+      "sla_breach_pct": 0.0,
+      "cost_efficiency_score": 79.7027
+    },
+    {
+      "batch_size": 96,
+      "avg_latency_ms": 10.16,
+      "cost_per_call_usd": 1.4e-07,
+      "cost_per_request_usd": 0.0,
+      "penalty_per_request": 0.0,
+      "total_cost_per_request": 0.0,
+      "sla_breach_pct": 0.0,
+      "cost_efficiency_score": 70.5332
+    },
+    {
+      "batch_size": 128,
+      "avg_latency_ms": 11.87,
+      "cost_per_call_usd": 1.6e-07,
+      "cost_per_request_usd": 0.0,
+      "penalty_per_request": 0.00048828,
+      "total_cost_per_request": 0.00048828,
+      "sla_breach_pct": 12.5,
+      "cost_efficiency_score": 1.2768
+    },
+    {
+      "batch_size": 192,
+      "avg_latency_ms": 18.5,
+      "cost_per_call_usd": 2.6e-07,
+      "cost_per_request_usd": 0.0,
+      "penalty_per_request": 0.00097656,
+      "total_cost_per_request": 0.00097656,
+      "sla_breach_pct": 37.5,
+      "cost_efficiency_score": 0.4844
+    },
+    {
+      "batch_size": 256,
+      "avg_latency_ms": 12.75,
+      "cost_per_call_usd": 1.8e-07,
+      "cost_per_request_usd": 0.0,
+      "penalty_per_request": 0.0,
+      "total_cost_per_request": 0.0,
+      "sla_breach_pct": 0.0,
+      "cost_efficiency_score": 56.0821
+    },
+    {
+      "batch_size": 320,
+      "avg_latency_ms": 15.21,
+      "cost_per_call_usd": 2.1e-07,
+      "cost_per_request_usd": 0.0,
+      "penalty_per_request": 0.00019531,
+      "total_cost_per_request": 0.00019531,
+      "sla_breach_pct": 12.5,
+      "cost_efficiency_score": 2.4059
+    },
+    {
+      "batch_size": 384,
+      "avg_latency_ms": 14.94,
+      "cost_per_call_usd": 2.1e-07,
+      "cost_per_request_usd": 0.0,
+      "penalty_per_request": 0.0,
+      "total_cost_per_request": 0.0,
+      "sla_breach_pct": 0.0,
+      "cost_efficiency_score": 48.0227
+    },
+    {
+      "batch_size": 448,
+      "avg_latency_ms": 16.0,
+      "cost_per_call_usd": 2.2e-07,
+      "cost_per_request_usd": 0.0,
+      "penalty_per_request": 0.0,
+      "total_cost_per_request": 0.0,
+      "sla_breach_pct": 0.0,
+      "cost_efficiency_score": 44.8256
+    },
+    {
+      "batch_size": 512,
+      "avg_latency_ms": 20.85,
+      "cost_per_call_usd": 2.9e-07,
+      "cost_per_request_usd": 0.0,
+      "penalty_per_request": 0.00024414,
+      "total_cost_per_request": 0.00024414,
+      "sla_breach_pct": 25.0,
+      "cost_efficiency_score": 1.3736
+    }
+  ]
+}
