@@ -1,0 +1,27 @@
+{
+  "session_id": "session_20260616_090000",
+  "generated_at": "2026-06-16T13:14:12.647334",
+  "model_id": "sla_breach_classifier_v1",
+  "alert_threshold": 0.7,
+  "total_events": 104,
+  "log_level_counts": {
+    "INFO": 94,
+    "WARNING": 3,
+    "ALERT": 0,
+    "CRITICAL": 7
+  },
+  "confusion_matrix": {
+    "TP": 7,
+    "FP": 0,
+    "FN": 0,
+    "TN": 97
+  },
+  "metrics": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1_score": 1.0,
+    "false_positive_rate": 0.0
+  },
+  "health_verdict": "HEALTHY \u2014 model catching all breaches with zero false positives",
+  "log_file": "/Users/devansh/Desktop/optimizeation/day28_monitoring.jsonl"
+}
