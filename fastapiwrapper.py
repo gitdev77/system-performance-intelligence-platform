@@ -18,10 +18,13 @@ from sklearn.preprocessing import StandardScaler
 # ─────────────────────────────────────────
 # CONFIG
 # ─────────────────────────────────────────
-DATA_FILE  = "/Users/devansh/Desktop/optimizeation/telemetry_v2.csv"
-TRAIN_FILE = "/Users/devansh/Desktop/optimizeation/day24_train.csv"
-COST_FILE  = "/Users/devansh/Desktop/optimizeation/day30_cost_report.json"
-REC_FILE   = "/Users/devansh/Desktop/optimizeation/day31_recommendation.json"
+import os
+
+BASE_DIR   = os.path.dirname(os.path.abspath(__file__))
+DATA_FILE  = os.path.join(BASE_DIR, "telemetry_v2.csv")
+TRAIN_FILE = os.path.join(BASE_DIR, "day24_train.csv")
+COST_FILE  = os.path.join(BASE_DIR, "day30_cost_report.json")
+REC_FILE   = os.path.join(BASE_DIR, "day31_recommendation.json")
 
 SLA_THRESHOLD_MS = 20.0
 ALERT_THRESHOLD  = 0.7

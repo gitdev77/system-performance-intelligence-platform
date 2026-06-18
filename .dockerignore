@@ -1,0 +1,41 @@
+# .dockerignore
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# PNG output files (large, not needed by API)
+*.png
+
+# Other day scripts (API only needs fastapiwrapper.py)
+day1*.py
+day2*.py
+day3*.py
+day22*.py
+day23*.py
+MM1.py
+phasetran.py
+eceroofline*.py
+logistic*.py
+costmodelling*.py
+jsonlogging*.py
+
+# Git
+.git
+.gitignore
+
+# macOS
+.DS_Store
+
+# Jupyter
+*.ipynb
+.ipynb_checkpoints/
+
+# Large output files not needed at runtime
+day27_alert_log.json
+day28_monitoring.jsonl
+day29_session_tracker.json
+day27_monitoring.png
