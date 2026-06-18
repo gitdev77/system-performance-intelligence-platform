@@ -1,0 +1,71 @@
+{
+  "generated_at": "2026-06-18T16:00:47.392613",
+  "final_recommendation": {
+    "batch_size": 8,
+    "consensus_scenarios": "3/3",
+    "latency_ms": 7.15,
+    "sla_breach_pct": 0.0,
+    "total_cost_usd": 1.24e-08,
+    "efficiency_pct": 100.0,
+    "annual_saving_usd": 356441.27,
+    "daily_saving_usd": 976.55
+  },
+  "pareto_frontier_batches": [
+    8,
+    16,
+    32,
+    64,
+    96,
+    256,
+    384,
+    448
+  ],
+  "dominated_batches": [
+    48,
+    128,
+    192,
+    320,
+    512
+  ],
+  "scenario_results": {
+    "Latency-First (real-time API)": {
+      "recommended_batch": 8,
+      "score": 1.0,
+      "latency_ms": 7.15,
+      "cost_per_req_usd": 1.24e-08,
+      "sla_breach_pct": 0.0,
+      "safety_margin": 120,
+      "weights": {
+        "latency": 0.6,
+        "cost": 0.2,
+        "sla": 0.2
+      }
+    },
+    "Cost-First (batch pipeline)": {
+      "recommended_batch": 8,
+      "score": 1.0,
+      "latency_ms": 7.15,
+      "cost_per_req_usd": 1.24e-08,
+      "sla_breach_pct": 0.0,
+      "safety_margin": 120,
+      "weights": {
+        "latency": 0.2,
+        "cost": 0.6,
+        "sla": 0.2
+      }
+    },
+    "SLA-First (regulated system)": {
+      "recommended_batch": 8,
+      "score": 1.0,
+      "latency_ms": 7.15,
+      "cost_per_req_usd": 1.24e-08,
+      "sla_breach_pct": 0.0,
+      "safety_margin": 120,
+      "weights": {
+        "latency": 0.2,
+        "cost": 0.2,
+        "sla": 0.6
+      }
+    }
+  }
+}
