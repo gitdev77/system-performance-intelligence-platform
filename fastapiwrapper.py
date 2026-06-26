@@ -591,7 +591,174 @@ def cost_breakdown(batch_size: int):
         ),
         "timestamp": datetime.now().isoformat(),
     }
+# ─────────────────────────────────────────
+# LLM ENDPOINTS (Days 41-43 — Gemini Layer)
+# ─────────────────────────────────────────
+from google import genai as genai_client
 
+GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "YOUR_KEY_HERE")
+gemini = genai_client.Client(api_key=GEMINI_API_KEY)
+GEMINI_MODEL = "gemini-2.5-flash"
+
+# ── 6. LLM PERFORMANCE REPORT ──
+@app.get(
+    "/llm/report",
+    summary="Generate natural language performance report",
+    tags=["LLM Intelligence"]
+)
+def llm_report():
+    """
+    Uses Gemini 1.5 Flash to generate a full
+    natural language performance analysis report
+    from your telemetry data.
+    """
+    agg = state["agg"]
+    data_context = "TELEMETRY SUMMARY:\n"
+    for _, row in agg.iterrows():
+        breach_flag = "BREACH ZONE" if row['sla_breach_pct'] > 0 else "SAFE"
+        data_context += (
+            f"Batch={int(row['batch_size'])}: "
+            f"avg_latency={row['avg_latency_ms']:.2f}ms | "
+            f"breach_rate={row['sla_breach_pct']:.1f}% | "
+            f"throughput={row['throughput']:.1f} ops/s | "
+            f"cost=${row['total_cost']:.6f} | {breach_flag}\n"
+        )
+
+    prompt = f"""
+You are a senior ML infrastructure engineer.
+{data_context}
+Key findings:
+- Throughput-latency correlation: r = -0.982
+- Performance cliff at batch=192
+- Annual saving from optimal batch: $356,441
+- Recommended batch: 8 or 16
+
+Write a concise performance report with:
+1. EXECUTIVE SUMMARY (3-4 sentences)
+2. PERFORMANCE CLIFF ANALYSIS
+3. COST IMPLICATIONS
+4. RECOMMENDATIONS (actionable, numbered)
+
+Under 400 words. Professional tone.
+"""
+    response = gemini.models.generate_content(
+        model=GEMINI_MODEL, contents=prompt
+    )
+    return {
+        "report"      : response.text,
+        "model"       : GEMINI_MODEL,
+        "generated_at": datetime.now().isoformat(),
+        "data_points" : len(agg),
+    }
+
+
+# ── 7. LLM ALERTS ──
+@app.get(
+    "/llm/alerts",
+    summary="Generate natural language alerts",
+    tags=["LLM Intelligence"]
+)
+def llm_alerts():
+    """
+    Scans telemetry for SLA violations and
+    generates plain-English alert messages
+    using Gemini for each breach condition.
+    """
+    agg = state["agg"]
+    alerts = []
+
+    for _, row in agg.iterrows():
+        breach_rate = float(row['sla_breach_pct'])
+        p95         = float(row['avg_latency_ms'])
+
+        if breach_rate >= 50:
+            severity = "CRITICAL"
+        elif breach_rate > 0:
+            severity = "WARNING"
+        elif p95 > 15:
+            severity = "CAUTION"
+        else:
+            continue
+
+        prompt = f"""
+Generate a concise ML infrastructure alert:
+- Batch size: {int(row['batch_size'])}
+- Severity: {severity}
+- Avg latency: {row['avg_latency_ms']:.2f}ms (SLA: 20ms)
+- SLA breach rate: {breach_rate:.1f}%
+- Cost per request: ${row['total_cost']:.6f}
+
+Format:
+[EMOJI] [SEVERITY]: [one-line issue summary]
+Metric: [key triggering metric]
+Action: [one specific action]
+
+Max 50 words.
+"""
+        response = gemini.models.generate_content(
+            model=GEMINI_MODEL, contents=prompt
+        )
+        alerts.append({
+            "batch_size" : int(row['batch_size']),
+            "severity"   : severity,
+            "message"    : response.text.strip(),
+        })
+
+    return {
+        "total_alerts": len(alerts),
+        "alerts"      : alerts,
+        "generated_at": datetime.now().isoformat(),
+        "model"       : GEMINI_MODEL,
+    }
+
+
+# ── 8. LLM RECOMMENDATION ──
+@app.get(
+    "/llm/recommend",
+    summary="Get AI-powered batch size recommendation",
+    tags=["LLM Intelligence"]
+)
+def llm_recommend():
+    """
+    Uses Gemini to reason about your telemetry
+    and produce a structured recommendation with
+    business justification and risk assessment.
+    """
+    agg = state["agg"]
+
+    # Build concise data summary
+    best_row  = agg.loc[agg['sla_breach_pct'] == 0].iloc[0]
+    worst_row = agg.loc[agg['sla_breach_pct'].idxmax()]
+
+    prompt = f"""
+You are an ML infrastructure engineer making a batch size recommendation.
+
+System data:
+- Best performer: batch={int(best_row['batch_size'])}, latency={best_row['avg_latency_ms']:.2f}ms, breach=0%, cost=${best_row['total_cost']:.6f}
+- Worst performer: batch={int(worst_row['batch_size'])}, latency={worst_row['avg_latency_ms']:.2f}ms, breach={worst_row['sla_breach_pct']:.0f}%, cost=${worst_row['total_cost']:.6f}
+- Performance cliff at batch=192
+- Annual saving from optimal selection: $356,441
+- SLA threshold: 20ms P95
+
+Provide exactly:
+RECOMMENDED BATCH SIZE: [number]
+CONFIDENCE: [High/Medium/Low]
+REASONING: [2 sentences]
+EXPECTED LATENCY: [value]
+EXPECTED COST: [value per request]
+ANNUAL SAVING: [vs worst case]
+RISK: [one sentence]
+
+Be specific with numbers.
+"""
+    response = gemini.models.generate_content(
+        model=GEMINI_MODEL, contents=prompt
+    )
+    return {
+        "recommendation": response.text,
+        "model"         : GEMINI_MODEL,
+        "generated_at"  : datetime.now().isoformat(),
+    }
 
 # ─────────────────────────────────────────
 # RUN DIRECTLY (alternative to uvicorn CLI)
